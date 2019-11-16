@@ -10,7 +10,7 @@ class Terms(Resource):
       ['brazil', 0.1],
     ]
     if terms:
-      return jsonify(terms)
+      return jsonify({ 'terms': terms })
     return {
       'message': 'Terms not found',
       'code': '404'
