@@ -1,8 +1,11 @@
 from flask_restful import Resource
 from flask import jsonify
 
+from models import TopicModel
+
 class Topics(Resource):
   def get(self, term):
+    # topics = TopicModel.query.filter_by(term_id=term)
     # query = request.args.get('query')
     # topic_model = TopicModel('datasets/topic_modelling')
     # topics = topic_model.get_topics(query)

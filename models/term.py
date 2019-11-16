@@ -9,6 +9,10 @@ class TermModel(db.Model):
   text = db.Column(db.String(64))
   created_at = db.Column(DateTime, default=datetime.now)
   updated_at = db.Column(DateTime, default=datetime.now, onupdate=datetime.now)
+  topics = db.relationship('TopicModel', backref='term', lazy='dynamic')
+
+  def __init__(self, text):
+    self.text = text
 
   def __repr__(self):
     return '<id {} Text {}>'.format(self.id, self.text)
