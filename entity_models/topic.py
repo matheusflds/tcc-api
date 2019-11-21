@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import DateTime
 from sqlalchemy.dialects.postgresql import ARRAY
 
-class TopicModel(db.Model):
+class TopicEntityModel(db.Model):
   __tablename__ = 'topics'
 
   id = db.Column(db.Integer, primary_key=True)

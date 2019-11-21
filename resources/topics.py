@@ -1,7 +1,7 @@
 from flask_restful import Resource
 from flask import jsonify
 
-from models import TopicModel
+from entity_models import TopicEntityModel
 
 class Topics(Resource):
   def get(self, term):

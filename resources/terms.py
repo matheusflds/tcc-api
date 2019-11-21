@@ -1,10 +1,11 @@
 from flask_restful import Resource, reqparse
-from flask import jsonify
+from flask import jsonify, make_response
 from datetime import datetime
 from math import log
 
-from models import TermModel
+from entity_models import TermEntityModel
 from data_fetch.get_tweet import get_tweets
+from topic_modelling.topic_model import TopicModel
 
 class Terms(Resource):
   MAX_TIMESTAMP_DIFF = 2826090
@@ -13,23 +14,28 @@ class Terms(Resource):
   parser.add_argument('term_text', required=True, help='This field cannot be left empty')
 
   def get(self):
-    terms = [[term.text, self._calculate_weight(term)] for term in TermModel.query.all()]
+    terms = [[term.text, self._calculate_weight(term)] for term in TermEntityModel.query.all()]
     if terms:
       return jsonify({ 'terms': terms })
-    return {
+
+    return make_response(jsonify({
       'message': 'Terms not found',
-      'code': '404'
-    }
+    }), 404) 
 
   def post(self):
+    dataset_dir = 'datasets'
     req_data = Terms.parser.parse_args()
     query = req_data['term_text']
-    # term_df = get_tweets(query, save_dir='datasets', max_requests=100, count=100)
-    term_df = get_tweets(query, save_dir='datasets', max_requests=1, count=10)
-    if term_df is not None:
-      print(term_df.head())
-    else:
-      print('aaaaaa')
+
+    term_df = get_tweets(query, save_dir=dataset_dir, max_requests=100, count=100)
+    if term_df is None:
+      return make_response(jsonify({
+        'message': 'Unable to find tweets'
+      }), 500)
+  
+    topic_model = TopicModel(term_df, term=query)
+    topics, term_df = topic_model.get_topics()
+
     return jsonify({ 
       'message': 'Succesfully processed tweets for specified term' 
     })

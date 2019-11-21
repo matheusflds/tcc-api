@@ -16,7 +16,7 @@ def get_tweets(query, save_dir=None, max_requests=10, count=100):
                      name='files')
   if len(filenames) > 0:
     filenames = filenames[filenames.str.contains(query)]
-    filename = filenames[0] if len(filenames) > 0 else None
+    filename = filenames.iloc[0] if len(filenames) > 0 else None
     df = pd.read_csv(Path(os.path.join(DATASET_DIR, filename)).resolve()) if filename else None
     if df is not None:
       return df
