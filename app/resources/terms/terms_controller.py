@@ -3,18 +3,18 @@ from flask import jsonify, make_response
 from datetime import datetime
 from math import log
 
-from entity_models import TermEntityModel
+from .term_model import TermDBModel
 from data_fetch.get_tweet import get_tweets
 from topic_modelling.topic_model import TopicModel
 
-class Terms(Resource):
+class TermList(Resource):
   MAX_TIMESTAMP_DIFF = 2826090
 
   parser = reqparse.RequestParser()
   parser.add_argument('term_text', required=True, help='This field cannot be left empty')
 
   def get(self):
-    terms = [[term.text, self._calculate_weight(term)] for term in TermEntityModel.query.all()]
+    terms = [[term.text, self._calculate_weight(term)] for term in TermDBModel.query.all()]
     if terms:
       return jsonify({ 'terms': terms })
 
@@ -24,7 +24,7 @@ class Terms(Resource):
 
   def post(self):
     dataset_dir = 'datasets'
-    req_data = Terms.parser.parse_args()
+    req_data = TermList.parser.parse_args()
     query = req_data['term_text']
 
     term_df = get_tweets(query, save_dir=dataset_dir, max_requests=100, count=100)

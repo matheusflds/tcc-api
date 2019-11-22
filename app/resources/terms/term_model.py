@@ -6,7 +6,7 @@ from sqlalchemy.dialects.postgresql import ENUM
 states = ('pending', 'processing', 'done')
 processing_status_enum = ENUM(*states, name='processing_status')
 
-class TermEntityModel(db.Model):
+class TermDBModel(db.Model):
   __tablename__ = 'terms'
 
   id = db.Column(db.Integer, primary_key=True)
@@ -14,7 +14,7 @@ class TermEntityModel(db.Model):
   processing_status = db.Column(processing_status_enum, nullable=False, server_default='pending')
   created_at = db.Column(DateTime, default=datetime.now)
   updated_at = db.Column(DateTime, default=datetime.now, onupdate=datetime.now)
-  topics = db.relationship('TopicEntityModel', backref='term', lazy='dynamic')
+  topics = db.relationship('TopicDBModel', backref='term', lazy='dynamic')
 
   def __init__(self, text):
     self.text = text

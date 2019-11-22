@@ -1,9 +1,9 @@
-from app import db
+from .. import db
 from datetime import datetime
 from sqlalchemy import DateTime
 from sqlalchemy.dialects.postgresql import ARRAY
 
-class TopicEntityModel(db.Model):
+class TopicDBModel(db.Model):
   __tablename__ = 'topics'
 
   id = db.Column(db.Integer, primary_key=True)
