@@ -18,6 +18,8 @@ class TermList(Resource):
 
     self.regparser_get_args = reqparse.RequestParser()
     self.regparser_get_args.add_argument('completed', type=inputs.boolean, location='args')
+    self.regparser_get_args.add_argument('quantity', type=int, location='args')
+
 
     self.regparser_post_args = reqparse.RequestParser()
     self.regparser_post_args.add_argument('term_text', required=True, help='This field cannot be left empty')
@@ -25,8 +27,10 @@ class TermList(Resource):
   def get(self):
     req_data = self.regparser_get_args.parse_args()
     filter_by_completed = req_data['completed']
+    quantity = req_data['quantity'] 
+
     terms_response = []
-    for term in TermRepository.get_all(completed=filter_by_completed):
+    for term in TermRepository.get(completed=filter_by_completed, quantity=quantity):
       term_response = {
         'term': term.text,
         'status': term_states.index(term.processing_status),
