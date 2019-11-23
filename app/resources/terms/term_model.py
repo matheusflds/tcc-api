@@ -3,8 +3,8 @@ from datetime import datetime
 from sqlalchemy import DateTime
 from sqlalchemy.dialects.postgresql import ENUM
 
-states = ('pending', 'processing', 'done')
-processing_status_enum = ENUM(*states, name='processing_status')
+term_states = ('pending', 'processing', 'done')
+processing_status_enum = ENUM(*term_states, name='processing_status')
 
 class TermDBModel(db.Model):
   __tablename__ = 'terms'

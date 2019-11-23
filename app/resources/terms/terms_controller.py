@@ -3,9 +3,11 @@ from flask import jsonify, make_response
 from datetime import datetime
 from math import log
 
-from .term_model import TermDBModel
+from .term_repository import TermRepository
+from .term_model import term_states
 from data_fetch.get_tweet import get_tweets
 from topic_modelling.topic_model import TopicModel
+
 
 class TermList(Resource):
   MAX_TIMESTAMP_DIFF = 2826090
@@ -14,7 +16,7 @@ class TermList(Resource):
   parser.add_argument('term_text', required=True, help='This field cannot be left empty')
 
   def get(self):
-    terms = [[term.text, self._calculate_weight(term)] for term in TermDBModel.query.all()]
+    terms = [[term.text, self._calculate_weight(term)] for term in TermRepository.get_all()]
     if terms:
       return jsonify({ 'terms': terms })
 
@@ -26,7 +28,19 @@ class TermList(Resource):
     dataset_dir = 'datasets'
     req_data = TermList.parser.parse_args()
     query = req_data['term_text']
+    term = TermRepository.insert({ 'text': query })
 
+    if term.processing_status is term_states[1]:
+      return jsonify({ 
+        'message': 'Term is being processed' 
+      })
+    elif term.processing_status is term_states[2]:
+      return jsonify({ 
+        'message': 'Term already processed' 
+      })
+
+    term.processing_status = term_states[1]
+    TermRepository.save_changes(term)
     term_df = get_tweets(query, save_dir=dataset_dir, max_requests=100, count=100)
     if term_df is None:
       return make_response(jsonify({
@@ -35,6 +49,12 @@ class TermList(Resource):
   
     topic_model = TopicModel(term_df, term=query)
     topics, term_df = topic_model.get_topics()
+
+    print(term_df.head())
+    print(topics)
+
+    term.processing_status = term_states[2]
+    TermRepository.save_changes(term)
 
     return jsonify({ 
       'message': 'Succesfully processed tweets for specified term' 

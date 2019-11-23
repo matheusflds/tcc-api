@@ -29,7 +29,7 @@ class TopicModel:
                                                          workers=self.num_workers,
                                                          chunksize=100,
                                                          iterations=400)
-    topics = self.model.print_topics()
+    topics = [(topic[0], re.findall(r'(\d\.\d+)\*"(.*?)"', topic[1])) for topic in self.model.print_topics()]
     document_topics = [self._get_document_topic(doc) for doc in bow_corpus]
     self.dataframe['topic'] = document_topics
 
