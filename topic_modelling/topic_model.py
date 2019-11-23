@@ -39,5 +39,4 @@ class TopicModel:
   def _get_document_topic(self, document):
     topics = self.model.get_document_topics(document)
     topic = max(topics, key=itemgetter(1))
-    topic = (topic[0], int(round(100 * topic[1])))
-    return topic
+    return topic[0]

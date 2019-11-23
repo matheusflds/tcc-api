@@ -58,8 +58,17 @@ class TermList(Resource):
     emotions_df = LstmConvModel.predict(term_df.cleaned)
     term_df = pd.concat([term_df, polarity_df, emotions_df], axis=1)
 
+    statistics_df = term_df.groupby('topic').agg({
+      'polarity': 'mean',
+      'joy': 'mean',
+      'anger': 'mean',
+      'fear': 'mean',
+      'sadness': 'mean'
+    })
+
     print(term_df.head())
     print(topics)
+    print(statistics_df)
 
     term.processing_status = term_states[2]
     TermRepository.save_changes(term)
