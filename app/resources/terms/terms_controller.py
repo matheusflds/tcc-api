@@ -19,7 +19,15 @@ class TermList(Resource):
   parser.add_argument('term_text', required=True, help='This field cannot be left empty')
 
   def get(self):
-    terms = [[term.text, self._calculate_weight(term)] for term in TermRepository.get_all()]
+    terms = []
+    for term in TermRepository.get_all():
+      term_response = {
+        'term': term.text,
+        'status': term_states.index(term.processing_status),
+        'description': term.description,
+        'weigth': self._calculate_weight(term)
+      }
+      terms.append(term_response)
     if terms:
       return jsonify({ 'terms': terms })
 
