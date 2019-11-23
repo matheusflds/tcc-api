@@ -36,7 +36,6 @@ class TermList(Resource):
         'description': term.description,
         'weigth': self._calculate_weight(term)
       }
-      print(list(term.topics))
       terms_response.append(term_response)
     if terms_response:
       return jsonify({ 'terms': terms_response })
@@ -70,10 +69,10 @@ class TermList(Resource):
   
     topic_model = TopicModel(term_df, term=query)
     topics, term_df = topic_model.get_topics()
-
-    # Ponto de atenção: o dataframe foi preprocessado com parametros diferentes se não me engano
-    polarity_df = SAModel.predict(term_df.cleaned)
-    emotions_df = LstmConvModel.predict(term_df.cleaned)
+    
+    term_df = term_df[~term_df.text.str.contains('http')]
+    polarity_df = SAModel.predict(term_df.text)
+    emotions_df = LstmConvModel.predict(term_df.text)
     term_df = pd.concat([term_df, polarity_df, emotions_df], axis=1)
 
     statistics_df = term_df.groupby('topic').agg({
