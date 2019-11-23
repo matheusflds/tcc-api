@@ -1,6 +1,6 @@
 import pandas as pd
 
-from flask_restful import Resource, reqparse
+from flask_restful import Resource, reqparse, inputs
 from flask import jsonify, make_response
 from datetime import datetime
 from math import log
@@ -13,23 +13,29 @@ from sentiment_analysis.model import SAModel
 from emotion_recognition.model import LstmConvModel
 
 class TermList(Resource):
-  MAX_TIMESTAMP_DIFF = 2826090
+  def __init__(self):
+    self.MAX_TIMESTAMP_DIFF = 2826090
 
-  parser = reqparse.RequestParser()
-  parser.add_argument('term_text', required=True, help='This field cannot be left empty')
+    self.regparser_get_args = reqparse.RequestParser()
+    self.regparser_get_args.add_argument('completed', type=inputs.boolean, location='args')
+
+    self.regparser_post_args = reqparse.RequestParser()
+    self.regparser_post_args.add_argument('term_text', required=True, help='This field cannot be left empty')
 
   def get(self):
-    terms = []
-    for term in TermRepository.get_all():
+    req_data = self.regparser_get_args.parse_args()
+    filter_by_completed = req_data['completed']
+    terms_response = []
+    for term in TermRepository.get_all(completed=filter_by_completed):
       term_response = {
         'term': term.text,
         'status': term_states.index(term.processing_status),
         'description': term.description,
         'weigth': self._calculate_weight(term)
       }
-      terms.append(term_response)
-    if terms:
-      return jsonify({ 'terms': terms })
+      terms_response.append(term_response)
+    if terms_response:
+      return jsonify({ 'terms': terms_response })
 
     return make_response(jsonify({
       'message': 'Terms not found',
@@ -37,7 +43,7 @@ class TermList(Resource):
 
   def post(self):
     dataset_dir = 'datasets'
-    req_data = TermList.parser.parse_args()
+    req_data = self.regparser_post_args.parse_args()
     query = req_data['term_text']
     term = TermRepository.insert({ 'text': query })
 

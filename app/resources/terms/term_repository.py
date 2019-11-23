@@ -1,11 +1,13 @@
 from .. import db
-from .term_model import TermDBModel
+from .term_model import TermDBModel, term_states
 from ..topics.topic_model import TopicDBModel
 
 class TermRepository:
 
   @staticmethod
-  def get_all():
+  def get_all(completed=None):
+    if completed: 
+      return TermDBModel.query.filter_by(processing_status=term_states[2])
     return TermDBModel.query.all()
 
   @staticmethod
