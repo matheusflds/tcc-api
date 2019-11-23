@@ -14,9 +14,14 @@ class TermDBModel(db.Model):
   description = db.Column(db.String(128))
   tweet_count = db.Column(db.Integer)
   processing_status = db.Column(processing_status_enum, nullable=False, server_default='pending')
+  topics = db.relationship('TopicDBModel', backref='term', lazy='dynamic')
+  polarity = db.Column(db.Integer)
+  joy = db.Column(db.Integer)
+  anger = db.Column(db.Integer)
+  fear = db.Column(db.Integer)
+  sadness = db.Column(db.Integer)
   created_at = db.Column(DateTime, default=datetime.now)
   updated_at = db.Column(DateTime, default=datetime.now, onupdate=datetime.now)
-  topics = db.relationship('TopicDBModel', backref='term', lazy='dynamic')
 
   def __init__(self, text):
     self.text = text

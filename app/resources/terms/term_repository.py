@@ -5,13 +5,17 @@ from ..topics.topic_model import TopicDBModel
 class TermRepository:
 
   @staticmethod
-  def get(completed=None, quantity=None):
+  def get_all(completed=None, quantity=None):
     query = TermDBModel.query
     if completed:
       query = query.filter_by(processing_status=term_states[2])
     if quantity:
       query = query.order_by(TermDBModel.updated_at.desc()).limit(quantity)
     return query.all()
+
+  @staticmethod
+  def get(text):
+    return TermDBModel.query.filter_by(text=text).first()
 
   @staticmethod
   def insert(data):

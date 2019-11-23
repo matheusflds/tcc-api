@@ -20,7 +20,6 @@ class TermList(Resource):
     self.regparser_get_args.add_argument('completed', type=inputs.boolean, location='args')
     self.regparser_get_args.add_argument('quantity', type=int, location='args')
 
-
     self.regparser_post_args = reqparse.RequestParser()
     self.regparser_post_args.add_argument('term_text', required=True, help='This field cannot be left empty')
 
@@ -30,13 +29,14 @@ class TermList(Resource):
     quantity = req_data['quantity'] 
 
     terms_response = []
-    for term in TermRepository.get(completed=filter_by_completed, quantity=quantity):
+    for term in TermRepository.get_all(completed=filter_by_completed, quantity=quantity):
       term_response = {
         'term': term.text,
         'status': term_states.index(term.processing_status),
         'description': term.description,
         'weigth': self._calculate_weight(term)
       }
+      print(list(term.topics))
       terms_response.append(term_response)
     if terms_response:
       return jsonify({ 'terms': terms_response })
@@ -86,6 +86,12 @@ class TermList(Resource):
     })
     overview_df = statistics_df.mean()
     topics = [self._get_topic_detail(topic[1], statistics_df.loc[topic[0]]) for topic in topics]
+
+    term.polarity = overview_df['polarity']
+    term.joy = overview_df['joy']
+    term.anger = overview_df['anger']
+    term.fear = overview_df['fear']
+    term.sadness = overview_df['sadness']
 
     term.tweet_count = int(statistics_df.agg({ 'topic': ['sum'] }).iloc[0,0])
     term.description = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
