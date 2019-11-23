@@ -1,3 +1,5 @@
+import pandas as pd
+
 from flask_restful import Resource, reqparse
 from flask import jsonify, make_response
 from datetime import datetime
@@ -7,7 +9,8 @@ from .term_repository import TermRepository
 from .term_model import term_states
 from data_fetch.get_tweet import get_tweets
 from topic_modelling.topic_model import TopicModel
-
+from sentiment_analysis.model import SAModel 
+from emotion_recognition.model import LstmConvModel
 
 class TermList(Resource):
   MAX_TIMESTAMP_DIFF = 2826090
@@ -49,6 +52,11 @@ class TermList(Resource):
   
     topic_model = TopicModel(term_df, term=query)
     topics, term_df = topic_model.get_topics()
+
+    # Ponto de atenção: o dataframe foi preprocessado com parametros diferentes, se não me engano
+    polarity_df = SAModel.predict(term_df.cleaned)
+    emotions_df = LstmConvModel.predict(term_df.cleaned)
+    term_df = pd.concat([term_df, polarity_df, emotions_df], axis=1)
 
     print(term_df.head())
     print(topics)
