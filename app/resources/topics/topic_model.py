@@ -18,8 +18,9 @@ class TopicDBModel(db.Model):
   created_at = db.Column(DateTime, default=datetime.now)
   updated_at = db.Column(DateTime, default=datetime.now, onupdate=datetime.now)
 
-  def __init__(self, words, term_id, polarity, anger_percentage, fear_percentage, joy_percentage, sad_percentage):
+  def __init__(self, words, words_probability, term_id, polarity, anger_percentage, fear_percentage, joy_percentage, sad_percentage):
     self.words = words
+    self.words_probability = words_probability
     self.term_id = term_id
     self.polarity = polarity
     self.anger_percentage = anger_percentage

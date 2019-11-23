@@ -53,7 +53,7 @@ class TermList(Resource):
     topic_model = TopicModel(term_df, term=query)
     topics, term_df = topic_model.get_topics()
 
-    # Ponto de atenção: o dataframe foi preprocessado com parametros diferentes, se não me engano
+    # Ponto de atenção: o dataframe foi preprocessado com parametros diferentes se não me engano
     polarity_df = SAModel.predict(term_df.cleaned)
     emotions_df = LstmConvModel.predict(term_df.cleaned)
     term_df = pd.concat([term_df, polarity_df, emotions_df], axis=1)
@@ -63,9 +63,13 @@ class TermList(Resource):
       'joy': 'mean',
       'anger': 'mean',
       'fear': 'mean',
-      'sadness': 'mean'
+      'sadness': 'mean',
+      'topic': 'count'
     })
 
+    topics = [self._get_topic_detail(topic[1], statistics_df.loc[topic[0]]) for topic in topics]
+    term = TermRepository.add_topics(term, topics)
+    
     print(term_df.head())
     print(topics)
     print(statistics_df)
@@ -88,3 +92,15 @@ class TermList(Resource):
     elif delta <= 1000:
       return 10
     return (-9.5 * delta / self.MAX_TIMESTAMP_DIFF) + 10
+
+  def _get_topic_detail(self, topic, statistics):
+    probabilities, words = zip(*topic)
+    return {
+      'words': words,
+      'words_probability': probabilities,
+      'polarity': statistics.polarity,
+      'joy': statistics.joy,
+      'anger': statistics.anger,
+      'fear': statistics.fear,
+      'sadness': statistics.sadness
+    }
