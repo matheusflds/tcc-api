@@ -66,16 +66,13 @@ class TermList(Resource):
       'sadness': 'mean',
       'topic': 'count'
     })
-
+    overview_df = statistics_df.mean()
     topics = [self._get_topic_detail(topic[1], statistics_df.loc[topic[0]]) for topic in topics]
-    term = TermRepository.add_topics(term, topics)
-    
-    print(term_df.head())
-    print(topics)
-    print(statistics_df)
 
+    term.tweet_count = int(statistics_df.agg({ 'topic': ['sum'] }).iloc[0,0])
+    term.description = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     term.processing_status = term_states[2]
-    TermRepository.save_changes(term)
+    TermRepository.add_topics(term, topics)
 
     return jsonify({ 
       'message': 'Succesfully processed tweets for specified term' 
