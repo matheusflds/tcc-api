@@ -16,3 +16,4 @@ class Config(object):
   CORS_HEADERS = 'Content-Type'
   SQLALCHEMY_DATABASE_URI = db_uri
   SQLALCHEMY_TRACK_MODIFICATIONS = False
+  REDIS_URL = os.environ.get('REDIS_URL')
