@@ -17,13 +17,13 @@ class Topics(Resource):
     if not term:
       return make_response(jsonify({
         'message': 'Terms not found',
-      }), 404) 
+      }), 404)
 
     response = {
       'term': term.text,
       'tweetCount': term.tweet_count,
       'description': term.description,
-      'overalResults': {
+      'overallResults': {
         'polarity': term.polarity,
         'joy': term.joy,
         'anger': term.anger,
