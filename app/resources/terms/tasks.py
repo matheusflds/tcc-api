@@ -8,8 +8,7 @@ from .term_repository import TermRepository
 from .term_model import term_states
 from data_fetch.get_tweet import get_tweets
 from topic_modelling.topic_model import TopicModel
-from sentiment_analysis.model import SAModel 
-from emotion_recognition.model import LstmConvModel
+from machine_learning.sentiment_analysis import SentimentAnalysis
 
 app = create_app()
 app.app_context().push()
@@ -28,11 +27,10 @@ def process_term(query):
 
   topic_model = TopicModel(term_df, term=query)
   topics, term_df = topic_model.get_topics()
-  
+
   term_df = term_df[~term_df.text.str.contains('http')]
-  polarity_df = SAModel.predict(term_df.text)
-  emotions_df = LstmConvModel.predict(term_df.text)
-  term_df = pd.concat([term_df, polarity_df, emotions_df], axis=1)
+  sentiment_df = SentimentAnalysis.process(term_df.text)
+  term_df = pd.concat([term_df, sentiment_df], axis=1)
 
   statistics_df = term_df.groupby('topic').agg({
     'polarity': 'mean',

@@ -21,7 +21,7 @@ def preprocess(texts, quiet=False, stemming=False, lemmatization=False, no_emoji
 
   # Remove repetitions
   pattern = re.compile(r"(.)\1{2,}", re.DOTALL)
-  texts = texts.str.replace(pattern, r"\1")
+  texts = texts.str.replace(pattern, r"\1\1")
 
   # Transform short negation form
   texts = texts.str.replace(r"(can't|cannot)", 'can not')
@@ -41,7 +41,7 @@ def preprocess(texts, quiet=False, stemming=False, lemmatization=False, no_emoji
   # Stemming
   if stemming:
     stemmer = SnowballStemmer("english")
-    texts = texts.apply(lambda x: stemmer.stem(x))
+    texts = texts.apply(lambda x: ' '.join([stemmer.stem(word) for word in x.split()]))
 
   # Lemmatization
   if lemmatization:

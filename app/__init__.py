@@ -12,7 +12,7 @@ def create_app():
   app = Flask(__name__)
   app.config.from_object(Config)
   app.redis = Redis.from_url(app.config['REDIS_URL'])
-  app.task_queue = rq.Queue('tcc-api', connection=app.redis)
+  app.task_queue = rq.Queue('tcc-api', connection=app.redis, job_timeout='2h')
   db.init_app(app)
   CORS(app)
 

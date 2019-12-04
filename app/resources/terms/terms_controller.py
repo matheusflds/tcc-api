@@ -19,7 +19,7 @@ class TermList(Resource):
   def get(self):
     req_data = self.regparser_get_args.parse_args()
     filter_by_completed = req_data['completed']
-    quantity = req_data['quantity'] 
+    quantity = req_data['quantity']
 
     terms_response = []
     for term in TermRepository.get_all(completed=filter_by_completed, quantity=quantity):
@@ -35,7 +35,7 @@ class TermList(Resource):
 
     return make_response(jsonify({
       'message': 'Terms not found',
-    }), 404) 
+    }), 404)
 
   def post(self):
     req_data = self.regparser_post_args.parse_args()
@@ -43,18 +43,18 @@ class TermList(Resource):
     term = TermRepository.insert({ 'text': query })
 
     if term.processing_status is term_states[1]:
-      return jsonify({ 
-        'message': 'Term is being processed' 
+      return jsonify({
+        'message': 'Term is being processed'
       })
     elif term.processing_status is term_states[2]:
-      return jsonify({ 
-        'message': 'Term already processed' 
+      return jsonify({
+        'message': 'Term already processed'
       })
 
     current_app.task_queue.enqueue('app.resources.terms.tasks.process_term', query)
 
-    return jsonify({ 
-      'message': 'Succesfully added term {} to queue'.format(query) 
+    return jsonify({
+      'message': 'Succesfully added term {} to queue'.format(query)
     })
 
 
