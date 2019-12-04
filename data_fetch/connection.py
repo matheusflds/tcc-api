@@ -12,5 +12,5 @@ class Connection:
   def load(self):
     auth = OAuthHandler(self.consumer_key, self.consumer_secret)
     auth.set_access_token(self.access_token, self.access_token_secret)
-    self.api = API(auth)
+    self.api = API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
     print('Successfully connected to the Twitter API.')
