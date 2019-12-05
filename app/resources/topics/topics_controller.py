@@ -24,20 +24,25 @@ class Topics(Resource):
       'tweetCount': term.tweet_count,
       'description': term.description,
       'overallResults': {
-        'polarity': term.polarity,
-        'joy': term.joy,
-        'anger': term.anger,
-        'fear': term.fear,
-        'sadness': term.sadness
+        'polarity': self._to_percent(term.polarity),
+        'joy': self._to_percent(term.joy),
+        'anger': self._to_percent(term.anger),
+        'fear': self._to_percent(term.fear),
+        'sadness': self._to_percent(term.sadness)
       },
-      'topics': [{
+      'topics': [
+        {
           'words': list(zip(topic.words, topic.words_probability)),
-          'polarity': topic.polarity,
-          'joy': topic.joy_percentage,
-          'anger': topic.anger_percentage,
-          'fear': topic.fear_percentage,
-          'sadness': topic.sad_percentage,
-        } for topic in term.topics]
+          'polarity': self._to_percent(topic.polarity),
+          'joy': self._to_percent(topic.joy_percentage),
+          'anger': self._to_percent(topic.anger_percentage),
+          'fear': self._to_percent(topic.fear_percentage),
+          'sadness': self._to_percent(topic.sad_percentage),
+        } for topic in term.topics
+      ]
     }
 
     return jsonify(response)
+
+  def _to_percent(self, value):
+    return round(value * 100)
