@@ -7,3 +7,4 @@ def setup_routes(app):
   api = Api(app)
   api.add_resource(TermList, '/terms')
   api.add_resource(Topics, '/topics')
+  api.add_resource(Statistics, '/statistics')
