@@ -24,10 +24,11 @@ class TermList(Resource):
     terms_response = []
     for term in TermRepository.get_all(completed=filter_by_completed, quantity=quantity):
       term_response = {
+        'id': term.id,
         'term': term.text,
         'status': term_states.index(term.processing_status),
         'description': term.description,
-        'weigth': self._calculate_weight(term)
+        'weigth': self._calculate_weight(term) / 10
       }
       terms_response.append(term_response)
     if terms_response:
@@ -44,17 +45,21 @@ class TermList(Resource):
 
     if term.processing_status is term_states[1]:
       return jsonify({
-        'message': 'Term is being processed'
+        'message': '"{}" is being processed'.format(query)
       })
     elif term.processing_status is term_states[2]:
       return jsonify({
-        'message': 'Term already processed'
+        'message': '"{}" already processed'.format(query),
+        'id': term.id
       })
 
-    current_app.task_queue.enqueue('app.resources.terms.tasks.process_term', query)
+    current_app.task_queue.enqueue('app.resources.terms.tasks.process_term',
+                                   query,
+                                   term.id,
+                                   job_timeout='2h')
 
     return jsonify({
-      'message': 'Succesfully added term {} to queue'.format(query)
+      'message': '"{}" will be processed in a few minutes'.format(query)
     })
 
 

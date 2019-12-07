@@ -14,8 +14,8 @@ class TermRepository:
     return query.all()
 
   @staticmethod
-  def get(text):
-    return TermDBModel.query.filter_by(text=text).first()
+  def get(id):
+    return TermDBModel.query.get(id)
 
   @staticmethod
   def insert(data):
