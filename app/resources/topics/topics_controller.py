@@ -8,12 +8,12 @@ class Topics(Resource):
   def __init__(self):
     self.regparser_get_args = reqparse.RequestParser()
 
-    self.regparser_get_args.add_argument('query', type=str, required=True, location='args')
+    self.regparser_get_args.add_argument('id', type=int, required=True, location='args')
 
   def get(self):
     req_data = self.regparser_get_args.parse_args()
-    query = req_data['query']
-    term = TermRepository.get(text=query)
+    id = req_data['id']
+    term = TermRepository.get(id)
     if not term:
       return make_response(jsonify({
         'message': 'Terms not found',

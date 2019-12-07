@@ -13,11 +13,11 @@ from machine_learning.sentiment_analysis import SentimentAnalysis
 app = create_app()
 app.app_context().push()
 
-def process_term(query):
+def process_term(query, id):
   print('Starting Task: Processing term "{}"'.format(query))
 
   dataset_dir = 'datasets'
-  term = TermRepository.get(text=query)
+  term = TermRepository.get(id)
   term.processing_status = term_states[1]
   TermRepository.save_changes(term)
   term_df = get_tweets(query, save_dir=dataset_dir, max_requests=100, count=100)

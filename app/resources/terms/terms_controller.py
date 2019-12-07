@@ -24,6 +24,7 @@ class TermList(Resource):
     terms_response = []
     for term in TermRepository.get_all(completed=filter_by_completed, quantity=quantity):
       term_response = {
+        'id': term.id,
         'term': term.text,
         'status': term_states.index(term.processing_status),
         'description': term.description,
@@ -48,10 +49,14 @@ class TermList(Resource):
       })
     elif term.processing_status is term_states[2]:
       return jsonify({
-        'message': '"{}" already processed'.format(query)
+        'message': '"{}" already processed'.format(query),
+        'id': term.id
       })
 
-    current_app.task_queue.enqueue('app.resources.terms.tasks.process_term', query, job_timeout='2h')
+    current_app.task_queue.enqueue('app.resources.terms.tasks.process_term',
+                                   query,
+                                   term.id,
+                                   job_timeout='2h')
 
     return jsonify({
       'message': '"{}" will be processed in a few minutes'.format(query)
