@@ -1,5 +1,6 @@
 import time
 import pandas as pd
+import wikipedia 
 
 from flask import jsonify, make_response
 
@@ -50,7 +51,7 @@ def process_term(query, id):
   term.sadness = overview_df['sadness']
 
   term.tweet_count = int(statistics_df.agg({ 'topic': ['sum'] }).iloc[0,0])
-  term.description = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+  term.description = _get_term_definition(query)
   term.processing_status = term_states[2]
   TermRepository.add_topics(term, topics)
 
@@ -67,3 +68,12 @@ def _get_topic_detail(topic, statistics):
     'fear': statistics.fear,
     'sadness': statistics.sadness
   }
+
+def _get_term_definition(term):
+  try:
+    definition = wikipedia.summary(term, sentences=1)
+    return definition
+  except wikipedia.exceptions.DisambiguationError as e:
+    return wikipedia.summary(e.options[0], sentences=1)
+  except wikipedia.exceptions.PageError:
+    return 'No description available'
