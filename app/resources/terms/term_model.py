@@ -11,7 +11,7 @@ class TermDBModel(db.Model):
 
   id = db.Column(db.Integer, primary_key=True)
   text = db.Column(db.String(64))
-  description = db.Column(db.String(128))
+  description = db.Column(db.String(256))
   tweet_count = db.Column(db.Integer)
   processing_status = db.Column(processing_status_enum, nullable=False, server_default='pending')
   topics = db.relationship('TopicDBModel', backref='term', lazy='dynamic')
