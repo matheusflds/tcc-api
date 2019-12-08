@@ -16,13 +16,3 @@ class Statistics(Resource):
       "topicCount": stats['topic_count']
     }
     return jsonify(response)
-
-
-
-# {
-#       "pendingTermCount": 12,
-#       "processingTermCount": 12,
-#       "processedTermCount": 12,
-#       "tweetCount": 12,
-#       "topicCount": 12
-# }
