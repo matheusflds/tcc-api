@@ -51,7 +51,8 @@ def process_term(query, id):
   term.sadness = overview_df['sadness']
 
   term.tweet_count = int(statistics_df.agg({ 'topic': ['sum'] }).iloc[0,0])
-  term.description = _get_term_definition(query)
+  description = _get_term_definition(query)
+  term.description = (description[:253] + '...') if len(description) > 256 else description
   term.processing_status = term_states[2]
   TermRepository.add_topics(term, topics)
 
