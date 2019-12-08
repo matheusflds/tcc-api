@@ -32,7 +32,7 @@ class Topics(Resource):
       },
       'topics': [
         {
-          'words': list(zip(topic.words, topic.words_probability)),
+          'words': list(zip([w.replace('_', ' ') for w in topic.words], topic.words_probability)),
           'polarity': self._to_percent(topic.polarity),
           'joy': self._to_percent(topic.joy_percentage),
           'anger': self._to_percent(topic.anger_percentage),

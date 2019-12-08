@@ -8,7 +8,7 @@ from nlp.utils import preprocess
 from operator import itemgetter
 
 class TopicModel:
-  def __init__(self, dataframe, term, num_workers=5):
+  def __init__(self, dataframe, term, num_workers=3):
     self.dataframe = dataframe
     self.term = term
     self.num_workers = num_workers
@@ -18,9 +18,13 @@ class TopicModel:
     self.num_topics = count
 
     tokenized_documents = [tweet.split() for tweet in self.dataframe.cleaned]
-    dictionary = gensim.corpora.Dictionary(tokenized_documents)
+    bigram = gensim.models.Phrases(tokenized_documents, min_count=5, threshold=100)
+    bigram_mod = gensim.models.phrases.Phraser(bigram)
+    bigrams = [bigram_mod[doc] for doc in tokenized_documents]
+
+    dictionary = gensim.corpora.Dictionary(bigrams)
     dictionary.filter_extremes(no_below=15, no_above=0.1, keep_n= 100000)
-    bow_corpus = [dictionary.doc2bow(doc) for doc in tokenized_documents]
+    bow_corpus = [dictionary.doc2bow(doc) for doc in bigrams]
 
     self.model = gensim.models.ldamulticore.LdaMulticore(bow_corpus, 
                                                          num_topics=self.num_topics, 
