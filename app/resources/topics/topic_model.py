@@ -8,7 +8,7 @@ class TopicDBModel(db.Model):
 
   id = db.Column(db.Integer, primary_key=True)
   term_id = db.Column(db.Integer, db.ForeignKey('terms.id'))
-  words = db.Column(ARRAY(db.String(32)))
+  words = db.Column(ARRAY(db.String(64)))
   words_probability = db.Column(ARRAY(db.Integer))
   polarity = db.Column(db.Float)
   anger_percentage = db.Column(db.Float)
