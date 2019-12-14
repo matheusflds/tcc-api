@@ -19,7 +19,7 @@ class TermRepository:
 
   @staticmethod
   def insert(data):
-    term = TermDBModel.query.filter_by(text=data['text']).first()
+    term = TermDBModel.query.filter(TermDBModel.text.ilike(data['text'])).first()
     if term:
       return term
 
