@@ -16,7 +16,7 @@ def concat_datasets(dataset_dir):
       df = pd.DataFrame(columns=['id', 'date', 'user', 'text'])
       for filename in query_files:
         filepath = os.path.join(DATASET_DIR, filename)
-        df = pd.concat([df, pd.read_csv(filepath)])
+        df = pd.concat([df, pd.read_csv(filepath, lineterminator='\n')])
         os.remove(filepath)
 
       now = datetime.now()

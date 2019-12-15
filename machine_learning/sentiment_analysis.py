@@ -11,8 +11,6 @@ from .models.emotion_recognition_model import emotion_recognition_model
 class SentimentAnalysis:
   @staticmethod
   def process(documents):
-    # scores = [randint(0, 100) for _ in documents]
-    # return pd.DataFrame(scores, columns=['polarity'])
     data_path = Path(os.path.abspath(__file__), '../model_data').resolve()
 
     tokenizer_path = data_path.joinpath('tokenizer.pickle')

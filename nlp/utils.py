@@ -6,7 +6,7 @@ from nltk.stem.snowball import SnowballStemmer
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import wordnet
 
-def preprocess(texts, quiet=False, stemming=False, lemmatization=False, no_emoji=False):
+def preprocess(texts, quiet=False, stemming=False, lemmatization=False, no_emoji=False, no_special_words=False):
   start = time()
   # Lowercasing
   texts = texts.str.lower()
@@ -29,6 +29,16 @@ def preprocess(texts, quiet=False, stemming=False, lemmatization=False, no_emoji
   texts = texts.str.replace(r"'s", ' is')
   texts = texts.str.replace(r"n't", ' not')
 
+  # Filtering emojis if needed
+  if no_emoji:
+    texts = texts.str.replace(r":\S+:", '')
+
+  # Handle special words
+  if (no_special_words):
+    texts = texts.str.replace(r"\bu\b", 'you')
+    texts = texts.str.replace(r"\bvia\b", "")
+    texts = texts.str.replace(r":", "")
+
   # Remove stop words
   stopwords = nltk.corpus.stopwords.words('english')
   stopwords.remove('not')
@@ -46,10 +56,6 @@ def preprocess(texts, quiet=False, stemming=False, lemmatization=False, no_emoji
   # Lemmatization
   if lemmatization:
     texts = texts.apply(lambda x: lemmatize_sentence(x))
-
-  # Filtering emojis if needed
-  if no_emoji:
-    texts = texts.str.replace(r":\S+:", '')
 
   if not quiet:
     print("Time to clean up: {:.2f} sec".format(time() - start))
