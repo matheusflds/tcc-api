@@ -8,7 +8,7 @@ class TermRepository:
   def get_all(completed=None, quantity=None):
     query = TermDBModel.query
     if completed:
-      query = query.filter_by(processing_status=term_states[2])
+      query = query.filter_by(processing_status=term_states[2]).order_by(TermDBModel.created_at.asc())
     if quantity:
       query = query.order_by(TermDBModel.updated_at.desc()).limit(quantity)
     return query.all()

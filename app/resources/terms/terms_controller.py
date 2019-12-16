@@ -7,8 +7,6 @@ from .term_model import term_states
 
 class TermList(Resource):
   def __init__(self):
-    self.MAX_TIMESTAMP_DIFF = 2826090
-
     self.regparser_get_args = reqparse.RequestParser()
     self.regparser_get_args.add_argument('completed', type=inputs.boolean, location='args')
     self.regparser_get_args.add_argument('quantity', type=int, location='args')
@@ -21,14 +19,16 @@ class TermList(Resource):
     filter_by_completed = req_data['completed']
     quantity = req_data['quantity']
 
+    terms_data = TermRepository.get_all(completed=filter_by_completed, quantity=quantity)
+    oldest_date = terms_data[0].created_at
     terms_response = []
-    for term in TermRepository.get_all(completed=filter_by_completed, quantity=quantity):
+    for term in terms_data:
       term_response = {
         'id': term.id,
         'term': term.text,
         'status': term_states.index(term.processing_status),
         'description': term.description,
-        'weigth': self._calculate_weight(term) / 10
+        'weigth': self._calculate_weight(term, oldest_date) / 10
       }
       terms_response.append(term_response)
     if terms_response:
@@ -63,13 +63,13 @@ class TermList(Resource):
     })
 
 
-  def _calculate_weight(self, term):
+  def _calculate_weight(self, term, oldest_date):
+    min_timestamp = datetime.timestamp(oldest_date)
     current = datetime.timestamp(datetime.now())
-    term_updated_date = datetime.timestamp(term.updated_at)
-    delta = current - term_updated_date
+    min_weight = 4
+    max_weight = 10
+    inclination = (max_weight - min_weight) / (current - min_timestamp)
+    
+    term_timestamp = datetime.timestamp(term.updated_at)
+    return inclination * (term_timestamp - min_timestamp) + min_weight
 
-    if delta > self.MAX_TIMESTAMP_DIFF:
-      return 0.5
-    elif delta <= 1000:
-      return 10
-    return (-9.5 * delta / self.MAX_TIMESTAMP_DIFF) + 10
