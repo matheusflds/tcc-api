@@ -14,7 +14,7 @@ class TopicModel:
     self.num_workers = num_workers
 
   def get_topics(self, count=5):
-    self.dataframe['cleaned'] = preprocess(self.dataframe.text, lemmatization=True, no_emoji=True)
+    self.dataframe['cleaned'] = preprocess(self.dataframe.text, lemmatization=True, no_emoji=True, no_special_words=True)
     self.num_topics = count
 
     tokenized_documents = [tweet.split() for tweet in self.dataframe.cleaned]

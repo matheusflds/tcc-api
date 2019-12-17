@@ -12,12 +12,12 @@ from .connection import Connection
 def get_tweets(query, save_dir=None, max_requests=10, count=100):
   dataset_dir = 'datasets'
   DATASET_DIR = Path(dataset_dir).resolve()
-  filenames = pd.Series([x for x in os.listdir(DATASET_DIR) if x.endswith('.csv')], 
+  filenames = pd.Series([x.lower() for x in os.listdir(DATASET_DIR) if x.endswith('.csv')], 
                      name='files')
   if len(filenames) > 0:
-    filenames = filenames[filenames.str.contains(query)]
+    filenames = filenames[filenames.str.contains(query.lower().replace(' ', '_'))]
     filename = filenames.iloc[0] if len(filenames) > 0 else None
-    df = pd.read_csv(Path(os.path.join(DATASET_DIR, filename)).resolve()) if filename else None
+    df = pd.read_csv(Path(os.path.join(DATASET_DIR, filename), lineterminator='\n').resolve()) if filename else None
     if df is not None:
       return df
 
@@ -62,7 +62,7 @@ def fetch_tweets(query, save_dir=None, max_requests=10, count=100):
     query = '_'.join(query.split(' '))
     now = datetime.now()
     timestamp = int(datetime.timestamp(now))
-    filename = query + '-' + str(timestamp) + '.csv'
+    filename = query.lower() + '-' + str(timestamp) + '.csv'
     df.to_csv(os.path.join(PATH, filename), index=None)
     print('Saved under: "' + PATH.as_posix() + '"')
 
